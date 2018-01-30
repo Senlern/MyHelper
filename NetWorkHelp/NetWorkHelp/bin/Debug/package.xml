@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="packet" default="package">
+	<description>
+            packet package
+    </description>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+	          property: 定义临时变量                      
+	         - - - - - - - - - - - - - - - - - -->
+	
+	<property name="module" value="packet" />
+	<property name="bin" value="_bin" />
+	<property name="jarname" value="packet" />
+	
+
+	<!-- ================================= 
+          target: default              
+         ================================= -->
+	<target name="package">
+		<antcall target="publish" />
+		<antcall target="clean" />
+	</target>
+	
+	<target name="prepare">
+		<delete dir="${module}" />
+		<mkdir dir="${bin}" />
+		<mkdir dir="${module}" />
+	</target>
+	
+	<target name="clean">
+		<delete dir="${bin}" />
+		<delete file="${jarname}.jar" />
+	</target>
+	
+	<target name="exec" depends="prepare">
+		<exec executable="proto2java.bat">
+		</exec>
+    </target>
+	 
+	<path id="classpath">
+		 <fileset dir="." includes="protobuf-java-2.5.0.jar" />
+	</path>
+	<target name="compile" depends="exec">
+		<javac debug="true" srcdir="java/sango" destdir="${bin}" encoding="utf-8" source="1.6" target="1.6" nowarn="true"  fork="true" listfiles="true">
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+	 
+	 <target name="jar" depends="compile" >
+		<jar destfile="${jarname}.jar" >
+			<fileset dir="${bin}" />
+		</jar>
+	</target>
+	
+	<target name="publish" depends="jar">
+		<copy todir="${module}"  preservelastmodified="true">
+			<fileset file="${jarname}.jar"/>
+		</copy>
+	</target>
+</project>
